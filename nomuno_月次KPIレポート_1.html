@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nomuno 公式X 月次レポート</title>
+<style>
+  :root {
+    --bordeaux: #6E2A34;
+    --bordeaux-deep: #531F27;
+    --bordeaux-tint: #F6ECEE;
+    --gold: #C9971F;
+    --gold-tint: #FBF3DF;
+    --silver: #8B8B8B;
+    --silver-tint: #F1F1F1;
+    --bronze: #B5651D;
+    --bronze-tint: #FBEEE3;
+    --ink: #333333;
+    --ink-soft: #6B6B6B;
+    --paper: #FAF8F6;
+    --card: #FFFFFF;
+    --line: #E9E4E1;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Meiryo", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 720px; margin: 0 auto; padding: 0 0 64px; }
+  .header {
+    padding: 40px 24px 30px;
+    text-align: center;
+  }
+  .logo-slot { width: 130px; margin: 0 auto 16px; }
+  .logo-slot img { width: 100%; height: auto; display: block; }
+  .header h1 { margin: 0 0 6px; font-size: 22px; font-weight: 700; color: var(--ink); }
+  .header p.sub { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+  .wave { display: block; width: 100%; height: 18px; margin-top: 22px; }
+
+  .section { margin: 0 20px 28px; }
+  .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .section-head h2 { margin: 0; font-size: 16.5px; font-weight: 700; color: var(--ink); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bordeaux); }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .card .label { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; }
+  .card .value-row { display: flex; align-items: baseline; gap: 6px; }
+  .card .value { font-size: 24px; font-weight: 700; color: var(--ink); }
+  .card .target { font-size: 12.5px; color: var(--ink-soft); }
+  .benchmark-note { font-size: 10.5px; color: var(--ink-soft); opacity: 0.85; }
+  .progress-track {
+    width: 100%; height: 6px; border-radius: 999px;
+    background: var(--line); margin: 8px 0 4px; overflow: hidden;
+  }
+  .progress-fill { height: 100%; border-radius: 999px; background: var(--bordeaux); }
+  .card .achieve { font-size: 12px; font-weight: 700; color: var(--bordeaux-deep); }
+  .card .why { font-size: 11.5px; color: var(--ink-soft); line-height: 1.6; margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 8px; }
+
+  .review-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .review-box .review-title { font-size: 12.5px; font-weight: 700; color: var(--bordeaux); margin-bottom: 8px; }
+  .review-box p { font-size: 13.5px; line-height: 1.8; color: var(--ink); margin: 0; }
+
+  .footer-mascot { text-align: center; margin-top: 30px; }
+  .footer-mascot img { width: 72px; height: auto; display: inline-block; }
+
+  .purpose-note {
+    margin: 0 20px 28px;
+    background: var(--bordeaux-tint);
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--bordeaux-deep);
+    font-weight: 500;
+  }
+
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .chart-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .chart-box .chart-label { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 8px; }
+  .chart-wrap { position: relative; height: 140px; }
+  .note { font-size: 11.5px; color: var(--ink-soft); margin-top: 10px; }
+
+  .podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 20px 10px 0;
+  }
+  .podium-item { text-align: center; width: 100px; }
+  .medal-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin: 0 auto 8px;
+    border: 3px solid #fff;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  .medal-gold { background: linear-gradient(160deg, #F6D264, var(--gold)); }
+  .medal-silver { background: linear-gradient(160deg, #E7E7E7, var(--silver)); }
+  .medal-bronze { background: linear-gradient(160deg, #E3A46A, var(--bronze)); }
+  .podium-name { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+  .podium-store { font-size: 11px; color: var(--ink-soft); margin-bottom: 6px; }
+  .post-link { color: var(--bordeaux); font-size: 10.5px; text-decoration: underline; }
+  .rank-label-link { font-size: 12px; color: var(--bordeaux); text-decoration: underline; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+  .podium-bar {
+    border-radius: 10px 10px 0 0;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 8px;
+    font-size: 15px; font-weight: 700; color: #fff;
+  }
+  .bar-gold { background: linear-gradient(180deg, #F0C13E, var(--gold)); height: 90px; }
+  .bar-silver { background: linear-gradient(180deg, #C9C9C9, var(--silver)); height: 66px; }
+  .bar-bronze { background: linear-gradient(180deg, #D69456, var(--bronze)); height: 48px; }
+  .podium-label { font-size: 11px; color: var(--ink-soft); margin-top: -34px; }
+
+  .rank-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .rank-num {
+    flex: none; width: 26px; text-align: center;
+    font-size: 13px; font-weight: 700; color: var(--ink-soft);
+  }
+  .rank-body { flex: 1; min-width: 0; }
+  .rank-name { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .rank-label { font-size: 12px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rank-eng { flex: none; font-size: 14px; font-weight: 700; color: var(--bordeaux); }
+
+  .cheer {
+    text-align: center;
+    background: var(--bordeaux-tint);
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 13px;
+    color: var(--bordeaux-deep);
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  @media (max-width: 460px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="logo-slot"><img src="nomuno_logo.png" alt="nomuno"></div>
+    <h1>nomuno 公式X 月次レポート</h1>
+    <p class="sub">2026年7月確定分</p>
+    <svg class="wave" viewBox="0 0 480 20" preserveAspectRatio="none">
+      <path d="M0 10 C 60 20, 120 0, 180 10 S 300 20, 360 10 S 460 0, 480 10" fill="none" stroke="#6E2A34" stroke-width="2" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <div class="purpose-note">
+    Xをやる意味は「来店動機」だけじゃありません。nomunoが"ワインの発信源"であることをみんなで証明していく場所です。日々の投稿が、ブランドの信頼と誇りを積み重ねています🍷
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="dot"></span><h2 id="kpi-heading">今月のKPI</h2></div>
+    <div class="cards" id="cards"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="dot"></span><h2>月次推移</h2></div>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-label">フォロワー数</div>
+        <div class="chart-wrap"><canvas id="c-followers"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-label">インプレッション数</div>
+        <div class="chart-wrap"><canvas id="c-impressions"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-label">エンゲージ率</div>
+        <div class="chart-wrap"><canvas id="c-engagement"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-label">プロフィールアクセス数</div>
+        <div class="chart-wrap"><canvas id="c-profile"></canvas></div>
+      </div>
+    </div>
+    <p class="note">※フォロワー数は月末時点、その他は月間合計</p>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><span class="dot"></span><h2>スタッフ投稿ランキング🎉</h2></div>
+
+    <div class="podium" id="podium"></div>
+    <div id="rank-list"></div>
+
+    <div class="review-box">
+      <div class="review-title">7月のふりかえり</div>
+      <p>運用再開後、初のフルヶ月となった7月は、インプレッション数16,840（目標の94%）、プロフィールアクセス数99（目標の99%）とほぼ目標水準に到達しました。エンゲージ率も1.27%と、目標の1.00%を上回って着地しています。フォロワー数は月内でほぼ横ばい（8,819〜8,822の範囲）でしたが、減少傾向には歯止めがかかった形です。8月はこの勢いを維持しつつ、フォロワー純増を狙っていきたいところです。</p>
+    </div>
+
+    <div class="cheer">今月もお店の魅力を届けてくれてありがとう！来月も楽しみにしてます🍷</div>
+  </div>
+
+  <div class="footer-mascot">
+    <img src="nomuno_mascot.png" alt="のむのん">
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  const monthly = [
+    { month: '4月', followers: 8939, impressions: 470, engagementRate: 1.28, profileVisits: 3 },
+    { month: '5月', followers: 8892, impressions: 791, engagementRate: 1.01, profileVisits: 7 },
+    { month: '6月', followers: 8832, impressions: 901, engagementRate: 0.55, profileVisits: 4 },
+    { month: '7月', followers: 8820, impressions: 16840, engagementRate: 1.27, profileVisits: 99 },
+  ];
+
+  const staffRanking = [
+    { name: '青木', store: '有楽町店', label: 'KOZEさんへのお礼投稿', engagement: 17, url: 'https://x.com/nomuno_official/status/2075497871588368444' },
+  ];
+
+  function fmtInt(n){ return Math.round(n).toLocaleString(); }
+  function fmtPct(n){ return Number(n).toFixed(2) + '%'; }
+
+  function renderHeading(){
+    const latest = monthly[monthly.length - 1];
+    const monthNum = latest.month.replace(/[^0-9]/g, '');
+    document.getElementById('kpi-heading').innerHTML = monthNum + '月度の状況 <span class="benchmark-note">※取得月</span>';
+  }
+
+  function renderCards(){
+    const latest = monthly[monthly.length - 1];
+    const items = [
+      { label: 'フォロワー数', key: 'followers', fmt: fmtInt, target: 10000, mode: 'level',
+        why: 'ワイン専門アカウントは競合が少なく、1万人はまだ数少ない水準。届けば「ワインの発信源」としての権威が生まれます。' },
+      { label: 'インプレッション数', key: 'impressions', fmt: fmtInt, target: 18000, mode: 'month',
+        why: '投稿がどれだけの人の目に触れているかの指標。認知拡大の土台になります。' },
+      { label: 'エンゲージ率', key: 'engagementRate', fmt: fmtPct, target: 1.0, mode: 'keep',
+        why: '「役に立った」「興味を持った」と感じてもらえた割合。数を追うより質を保つための指標です。',
+        benchmark: 'X一般目安：0.2%で良好、0.5%で上位10%' },
+      { label: 'プロフィールアクセス数', key: 'profileVisits', fmt: fmtInt, target: 100, mode: 'month',
+        why: '「もっと知りたい」と思った人の数。来店を検討し始める一歩手前の行動です。' },
+    ];
+    document.getElementById('cards').innerHTML = items.map(it => {
+      const val = latest[it.key];
+      const pct = Math.min(100, Math.round((val / it.target) * 100));
+      const targetText = it.mode === 'level'
+        ? '目標 ' + it.fmt(it.target)
+        : (it.mode === 'keep' ? '目標 ' + it.fmt(it.target) + '以上を維持' : '今月目標 ' + it.fmt(it.target));
+      const achieveText = it.mode === 'keep'
+        ? (val >= it.target ? '目標水準を維持できています' : '目標水準を下回っています')
+        : '達成率 ' + pct + '%';
+      const whyHtml = it.why ? '<div class="why">' + it.why + '</div>' : '';
+      const benchmarkHtml = it.benchmark ? ' <span class="benchmark-note">（' + it.benchmark + '）</span>' : '';
+      return '<div class="card">' +
+        '<div class="label">' + it.label + '</div>' +
+        '<div class="value-row"><span class="value">' + it.fmt(val) + '</span></div>' +
+        '<div class="target">' + targetText + benchmarkHtml + '</div>' +
+        '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%;"></div></div>' +
+        '<div class="achieve">' + achieveText + '</div>' +
+        whyHtml +
+      '</div>';
+    }).join('');
+  }
+
+  function buildChart(id, data, color, formatter){
+    new Chart(document.getElementById(id), {
+      type: 'line',
+      data: {
+        labels: monthly.map(d => d.month),
+        datasets: [{
+          data: data, borderColor: color, backgroundColor: color + '1A',
+          fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: color, borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => formatter(c.parsed.y) } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#6B6B6B', font: { size: 11 } } },
+          y: { grid: { color: '#E9E4E1' }, ticks: { color: '#6B6B6B', font: { size: 11 }, callback: (v) => formatter(v) } }
+        }
+      }
+    });
+  }
+
+  function renderCharts(){
+    buildChart('c-followers', monthly.map(d => d.followers), '#6E2A34', fmtInt);
+    buildChart('c-impressions', monthly.map(d => d.impressions), '#1a7a3c', fmtInt);
+    buildChart('c-engagement', monthly.map(d => d.engagementRate), '#C9971F', (v) => Number(v).toFixed(2) + '%');
+    buildChart('c-profile', monthly.map(d => d.profileVisits), '#4a3aa7', fmtInt);
+  }
+
+  function renderRanking(){
+    const sorted = staffRanking.slice().sort((a,b) => b.engagement - a.engagement);
+    const podium = document.getElementById('podium');
+    const top3 = sorted.slice(0, 3);
+    const order = [1, 0, 2];
+    const medalClass = ['medal-gold', 'medal-silver', 'medal-bronze'];
+    const barClass = ['bar-gold', 'bar-silver', 'bar-bronze'];
+    const medalIcon = ['🥇', '🥈', '🥉'];
+    podium.innerHTML = order.filter(i => top3[i]).map(i => {
+      const p = top3[i];
+      const link = p.url ? ' <a href="' + p.url + '" target="_blank" rel="noopener" class="post-link">投稿を見る</a>' : '';
+      return '<div class="podium-item">' +
+        '<div class="medal-circle ' + medalClass[i] + '">' + medalIcon[i] + '</div>' +
+        '<div class="podium-name">' + p.name + '</div>' +
+        '<div class="podium-store">' + p.store + link + '</div>' +
+        '<div class="podium-bar ' + barClass[i] + '">' + fmtInt(p.engagement) + '</div>' +
+      '</div>';
+    }).join('');
+
+    const rest = sorted.slice(3);
+    document.getElementById('rank-list').innerHTML = rest.map((p, idx) => {
+      const labelHtml = p.url
+        ? '<a href="' + p.url + '" target="_blank" rel="noopener" class="rank-label-link">' + p.label + '</a>'
+        : '<span class="rank-label">' + p.label + '</span>';
+      return '<div class="rank-row">' +
+        '<div class="rank-num">' + (idx + 4) + '</div>' +
+        '<div class="rank-body"><div class="rank-name">' + p.name + '（' + p.store + '）</div>' + labelHtml + '</div>' +
+        '<div class="rank-eng">' + fmtInt(p.engagement) + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  renderHeading();
+  renderCards();
+  renderCharts();
+  renderRanking();
+</script>
+</body>
+</html>
